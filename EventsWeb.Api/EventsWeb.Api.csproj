@@ -10,4 +10,13 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EventsWeb.Core\EventsWeb.Core.csproj" />
+    <ProjectReference Include="..\EventsWeb.Services\EventsWeb.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>
