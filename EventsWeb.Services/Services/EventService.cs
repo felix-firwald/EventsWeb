@@ -4,7 +4,7 @@ using EventsWeb.Core.Interface;
 
 namespace EventsWeb.Services.Services
 {
-    internal sealed class EventService : IEventService
+    public sealed class EventService : IEventService
     {
         /// <summary>
         /// Source collection

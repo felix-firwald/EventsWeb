@@ -1,4 +1,8 @@
 ﻿
+using EventsWeb.Core.Interface;
+using EventsWeb.Services.Services;
+using System.Runtime.CompilerServices;
+
 namespace EventsWeb.Api
 {
     public class Program
@@ -9,11 +13,11 @@ namespace EventsWeb.Api
             builder.Services.AddControllers();
             builder.Services.AddSwaggerGen();
             Program.RegisterServicesLayer(builder.Services);
-                builder.Host.UseDefaultServiceProvider(options =>
-                {
-                    options.ValidateScopes = true;
-                    options.ValidateOnBuild = true;
-                });
+            builder.Host.UseDefaultServiceProvider(options =>
+            {
+                options.ValidateScopes = true;
+                options.ValidateOnBuild = true;
+            });
             WebApplication app = builder.Build();
             app.UseSwagger();
             app.UseSwaggerUI();
@@ -21,6 +25,10 @@ namespace EventsWeb.Api
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
+        }
+        private static void RegisterServicesLayer(IServiceCollection col)
+        {
+            col.AddSingleton<IEventService, EventService>();
         }
     }
 }
