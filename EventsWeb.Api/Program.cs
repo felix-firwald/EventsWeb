@@ -1,3 +1,7 @@
+﻿
+using EventsWeb.Core.Interface;
+using EventsWeb.Services.Services;
+using System.Runtime.CompilerServices;
 
 namespace EventsWeb.Api
 {
@@ -5,30 +9,26 @@ namespace EventsWeb.Api
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            builder.Services.AddSwaggerGen();
+            Program.RegisterServicesLayer(builder.Services);
+            builder.Host.UseDefaultServiceProvider(options =>
             {
-                app.MapOpenApi();
-            }
-
+                options.ValidateScopes = true;
+                options.ValidateOnBuild = true;
+            });
+            WebApplication app = builder.Build();
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
+        }
+        private static void RegisterServicesLayer(IServiceCollection col)
+        {
+            col.AddSingleton<IEventService, EventService>();
         }
     }
 }

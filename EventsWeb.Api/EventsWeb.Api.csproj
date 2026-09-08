@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EventsWeb.Core\EventsWeb.Core.csproj" />
+    <ProjectReference Include="..\EventsWeb.Services\EventsWeb.Services.csproj" />
   </ItemGroup>
 
 </Project>
