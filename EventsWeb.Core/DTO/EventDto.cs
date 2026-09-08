@@ -1,8 +1,10 @@
-﻿namespace EventsWeb.Core.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EventsWeb.Core.DTO
 {
     public record EventDto(
-        string Title, 
-        string Description, 
-        DateTime StartAt, 
-        DateTime EndAt);
+        [Required] string Title, 
+        string? Description,
+        [Required] DateTime StartAt,
+        [Required] DateTime EndAt);
 }

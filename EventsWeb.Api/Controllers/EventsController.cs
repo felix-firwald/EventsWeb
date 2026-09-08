@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWeb.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public sealed class EventsController : ControllerBase
     {
@@ -34,6 +34,11 @@ namespace EventsWeb.Api.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] EventDto dto)
         {
+            this.CheckDates(dto);
+            if (!this.ModelState.IsValid)
+            {
+                return this.ValidationProblem(this.ModelState);
+            }
             this.eventService.Create(dto);
             return this.Created();
         }
@@ -41,13 +46,26 @@ namespace EventsWeb.Api.Controllers
         [HttpPut("{id:guid}")]
         public IActionResult Put(Guid id, [FromBody] EventDto dto)
         {
+            this.CheckDates(dto);
+            if (!this.ModelState.IsValid)
+            {
+                return this.ValidationProblem(this.ModelState);
+            }
             Event? found = this.eventService.GetById(id);
             if (found is null)
             {
                 return this.NotFound();
-            }
+            }           
             this.eventService.Update(found, dto);
             return this.NoContent();
+        }
+
+        private void CheckDates(EventDto dto)
+        {
+            if (dto.StartAt >= dto.EndAt)
+            {
+                this.ModelState.AddModelError(nameof(dto.EndAt), "EndAt must be later than StartAt.");
+            }
         }
 
         [HttpDelete("{id:guid}")]
