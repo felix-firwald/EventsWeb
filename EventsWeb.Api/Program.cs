@@ -1,4 +1,5 @@
 ﻿
+using EventsWeb.Api.Middleware;
 using EventsWeb.Core.Interface;
 using EventsWeb.Services.Services;
 using System.Runtime.CompilerServices;
@@ -23,6 +24,7 @@ namespace EventsWeb.Api
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
             app.UseAuthorization();
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.MapControllers();
             app.Run();
         }
