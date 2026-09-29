@@ -40,7 +40,7 @@ namespace EventsWeb.Services.Services
             this.events.Remove(entity);
         }
 
-        public Event? GetById(Guid id)
+        public Event GetById(Guid id)
         {
             Event? e = this.events.FirstOrDefault(e => e.Id == id);
             if (e == null)
