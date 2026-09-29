@@ -11,7 +11,7 @@ namespace EventsWeb.Core.Interface
         /// <summary>
         /// Get all events
         /// </summary>
-        public IReadOnlyCollection<Event> GetEvents();
+        public PaginatedResult<Event> GetEvents(PaginationRequestDto pagination, string? title = null, DateTime? from = null, DateTime? to = null);
 
         /// <summary>
         /// Gets an event by its id if exists, otherwise null
