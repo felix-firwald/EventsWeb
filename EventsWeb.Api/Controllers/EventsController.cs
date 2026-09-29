@@ -15,9 +15,14 @@ namespace EventsWeb.Api.Controllers
             this.eventService = service;
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public ActionResult<PaginatedResult<Event>> GetAll(
+            [FromQuery] string? title = null,
+            [FromQuery] DateTime? from = null,
+            [FromQuery] DateTime? to = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            return this.Ok(this.eventService.GetEvents());
+            return this.Ok(this.eventService.GetEvents(new(page, pageSize), title, from, to));
         }
 
         [HttpGet("{id:guid}")]
