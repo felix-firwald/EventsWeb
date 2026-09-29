@@ -32,12 +32,44 @@ namespace EventsWeb.Services.Services
 
         public Event? GetById(Guid id)
         {
-            return this.events.FirstOrDefault(e => e.Id == id);
+            Event? e = this.events.FirstOrDefault(e => e.Id == id);
+            if (e == null)
+            {
+                throw new NotFoundException();
+            }
+            return e;
         }
 
-        public IReadOnlyCollection<Event> GetEvents()
+        public PaginatedResult<Event> GetEvents(PaginationRequestDto pagination, string? title = null, DateTime? from = null, DateTime? to = null)
         {
-            return this.events;
+            IQueryable<Event> query = this.events.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                title = title.ToLower();
+                query = query.Where(e => e.Title.ToLower().Contains(title));
+            }
+            if (from.HasValue)
+            {
+                query = query.Where(e => e.StartAt >= from);
+        }
+            if (to.HasValue)
+            {
+                query = query.Where(e => e.EndAt <= to);
+            }
+
+            int commonCount = query.Count();
+            Event[] events = query
+                .Skip(pagination.SkipCount)
+                .Take(pagination.PageSize)
+                .ToArray();
+            PaginatedResult<Event> result = new()
+        {
+                TotalCount = commonCount,
+                CurrentPageNumber = pagination.CurrentPage,
+                CurrentPageSize = events.Length,
+                Entities = events,
+            };
+            return result;
         }
 
         public void Update(Event target, EventDto dto)
