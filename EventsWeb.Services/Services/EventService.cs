@@ -1,6 +1,8 @@
 ﻿using EventsWeb.Core.DTO;
 using EventsWeb.Core.Entities;
+using EventsWeb.Core.Exceptions;
 using EventsWeb.Core.Interface;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventsWeb.Services.Services
 {
@@ -12,10 +14,18 @@ namespace EventsWeb.Services.Services
         private List<Event> events { get; init; }
         public EventService()
         {
-            this.events = new();
+            this.events = [];
         }
         public void Create(EventDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Title))
+            {
+                throw new ValidationException("Событие не может не содержать наименования");
+            }
+            if (dto.StartAt > dto.EndAt)
+            {
+                throw new ValidationException("Дата начала события не может быть больше даты окончания");
+            }
             Event result = new();
             result.Id = Guid.NewGuid();
             result.Title = dto.Title;
@@ -51,19 +61,19 @@ namespace EventsWeb.Services.Services
             if (from.HasValue)
             {
                 query = query.Where(e => e.StartAt >= from);
-        }
+            }
             if (to.HasValue)
             {
                 query = query.Where(e => e.EndAt <= to);
             }
-
+            
             int commonCount = query.Count();
             Event[] events = query
                 .Skip(pagination.SkipCount)
                 .Take(pagination.PageSize)
                 .ToArray();
             PaginatedResult<Event> result = new()
-        {
+            {
                 TotalCount = commonCount,
                 CurrentPageNumber = pagination.CurrentPage,
                 CurrentPageSize = events.Length,
@@ -74,6 +84,10 @@ namespace EventsWeb.Services.Services
 
         public void Update(Event target, EventDto dto)
         {
+            if (dto.StartAt > dto.EndAt)
+            {
+                throw new ValidationException("Дата начала события не может быть после даты его окончания");
+            }
             target.Title = dto.Title;
             target.Description = dto.Description;
             target.StartAt = dto.StartAt;
