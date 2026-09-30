@@ -1,5 +1,6 @@
 ﻿using EventsWeb.Core.DTO;
 using EventsWeb.Core.Entities;
+using EventsWeb.Core.Exceptions;
 
 namespace EventsWeb.Core.Interface
 {
@@ -11,12 +12,12 @@ namespace EventsWeb.Core.Interface
         /// <summary>
         /// Get all events
         /// </summary>
-        public IReadOnlyCollection<Event> GetEvents();
+        public PaginatedResult<Event> GetEvents(PaginationRequestDto pagination, string? title = null, DateTime? from = null, DateTime? to = null);
 
         /// <summary>
-        /// Gets an event by its id if exists, otherwise null
+        /// Gets an event by its id if exists, otherwise throws <see cref="NotFoundException"/>
         /// </summary>
-        public Event? GetById(Guid id);
+        public Event GetById(Guid id);
 
         /// <summary>
         /// Creates new event

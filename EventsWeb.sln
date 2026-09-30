@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36616.10 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12105.275 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsWeb.Api", "EventsWeb.Api\EventsWeb.Api.csproj", "{5C24B46F-B711-43C7-A104-C6BC946E23C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsWeb.Core", "EventsWeb.Core\EventsWeb.Core.csproj", "{2BD72F45-3C9C-4C7B-8419-7F4BC4E1BD0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsWeb.Services", "EventsWeb.Services\EventsWeb.Services.csproj", "{C175FB2D-5364-4835-B096-D1019D2F4272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsWeb.UnitTests", "EventsWeb.UnitTests\EventsWeb.UnitTests.csproj", "{4722FB3D-8372-4BAF-B175-72A8DA41DCC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C175FB2D-5364-4835-B096-D1019D2F4272}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C175FB2D-5364-4835-B096-D1019D2F4272}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C175FB2D-5364-4835-B096-D1019D2F4272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4722FB3D-8372-4BAF-B175-72A8DA41DCC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4722FB3D-8372-4BAF-B175-72A8DA41DCC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4722FB3D-8372-4BAF-B175-72A8DA41DCC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4722FB3D-8372-4BAF-B175-72A8DA41DCC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
