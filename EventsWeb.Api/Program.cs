@@ -20,11 +20,11 @@ namespace EventsWeb.Api
                 options.ValidateOnBuild = true;
             });
             WebApplication app = builder.Build();
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHttpsRedirection();
-            app.UseAuthorization();
-            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+            app.UseAuthorization();        
             app.MapControllers();
             app.Run();
         }
