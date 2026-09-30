@@ -31,6 +31,7 @@ namespace EventsWeb.Api
         private static void RegisterServicesLayer(IServiceCollection col)
         {
             col.AddSingleton<IEventService, EventService>();
+            col.AddSingleton<IBookingService, BookingService>();
         }
     }
 }
