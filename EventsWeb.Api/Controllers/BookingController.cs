@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventsWeb.Api.Controllers
 {
-    [Route("api/bookings")]
+    [Route("bookings")]
     [ApiController]
     public class BookingController : ControllerBase
     {
