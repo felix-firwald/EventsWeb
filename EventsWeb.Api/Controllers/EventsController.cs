@@ -10,9 +10,11 @@ namespace EventsWeb.Api.Controllers
     public sealed class EventsController : ControllerBase
     {
         private IEventService eventService { get; }
-        public EventsController(IEventService service)
+        private IBookingService bookingService { get; }
+        public EventsController(IEventService service, IBookingService bookingService)
         {
             this.eventService = service;
+            this.bookingService = bookingService;
         }
         [HttpGet]
         public ActionResult<PaginatedResult<Event>> GetAll(
