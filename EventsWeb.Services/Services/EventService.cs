@@ -100,14 +100,17 @@ namespace EventsWeb.Services.Services
 
         public void Update(Event target, EventDto dto)
         {
-            if (dto.StartAt >= dto.EndAt)
+            lock (this.locker)
             {
-                throw new ValidationException("Дата начала события не может быть после даты его окончания");
-            }
-            target.Title = dto.Title;
-            target.Description = dto.Description;
-            target.StartAt = dto.StartAt;
-            target.EndAt = dto.EndAt;
+                if (dto.StartAt >= dto.EndAt)
+                {
+                    throw new ValidationException("Дата начала события не может быть после даты его окончания");
+                }
+                target.Title = dto.Title;
+                target.Description = dto.Description;
+                target.StartAt = dto.StartAt;
+                target.EndAt = dto.EndAt;
+            }            
         }
     }
 }
