@@ -23,7 +23,7 @@ namespace EventsWeb.Services.Services
             {
                 throw new ValidationException("Событие не может не содержать наименования");
             }
-            if (dto.StartAt > dto.EndAt)
+            if (dto.StartAt >= dto.EndAt)
             {
                 throw new ValidationException("Дата начала события не может быть больше даты окончания");
             }
