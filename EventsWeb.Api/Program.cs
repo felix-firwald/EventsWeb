@@ -32,7 +32,7 @@ namespace EventsWeb.Api
         {
             col.AddSingleton<IEventService, EventService>();
             col.AddSingleton<IBookingService, BookingService>();
-            col.AddHostedService<BookingBackgroungService>();
+            col.AddHostedService<BookingBackgroundService>();
         }
     }
 }

@@ -3,11 +3,11 @@ using EventsWeb.Core.Interface;
 
 namespace EventsWeb.Api.Background
 {
-    public sealed class BookingBackgroungService : BackgroundService
+    public sealed class BookingBackgroundService : BackgroundService
     {
         private IBookingService bookingService { get; }
-        private ILogger<BookingBackgroungService> logger { get; }
-        public BookingBackgroungService(ILogger<BookingBackgroungService> logger, IBookingService bookingService)
+        private ILogger<BookingBackgroundService> logger { get; }
+        public BookingBackgroundService(ILogger<BookingBackgroundService> logger, IBookingService bookingService)
         {
             this.bookingService = bookingService;
             this.logger = logger;
