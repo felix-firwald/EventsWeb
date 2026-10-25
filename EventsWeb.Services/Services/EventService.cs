@@ -12,6 +12,7 @@ namespace EventsWeb.Services.Services
         /// Source collection
         /// </summary>
         private List<Event> events { get; init; }
+        private object locker { get; } = new();
         public EventService()
         {
             this.events = [];
@@ -32,17 +33,27 @@ namespace EventsWeb.Services.Services
             result.Description = dto.Description;
             result.StartAt = dto.StartAt;
             result.EndAt = dto.EndAt;
-            this.events.Add(result);
+            lock (this.locker)
+            {
+                this.events.Add(result);
+            }            
         }
 
         public void Delete(Event entity)
         {
-            this.events.Remove(entity);
+            lock (this.locker)
+            {
+                this.events.Remove(entity);
+            }
         }
 
         public Event GetById(Guid id)
         {
-            Event? e = this.events.FirstOrDefault(e => e.Id == id);
+            Event? e;
+            lock (this.locker)
+            {
+                e = this.events.FirstOrDefault(e => e.Id == id);
+            }
             if (e == null)
             {
                 throw new NotFoundException();
@@ -68,10 +79,14 @@ namespace EventsWeb.Services.Services
             }
             
             int commonCount = query.Count();
-            Event[] events = query
-                .Skip(pagination.SkipCount)
-                .Take(pagination.PageSize)
-                .ToArray();
+            Event[] events;
+            lock (this.locker)
+            {
+                events = query
+                    .Skip(pagination.SkipCount)
+                    .Take(pagination.PageSize)
+                    .ToArray();
+            }
             PaginatedResult<Event> result = new()
             {
                 TotalCount = commonCount,
@@ -84,7 +99,7 @@ namespace EventsWeb.Services.Services
 
         public void Update(Event target, EventDto dto)
         {
-            if (dto.StartAt > dto.EndAt)
+            if (dto.StartAt >= dto.EndAt)
             {
                 throw new ValidationException("Дата начала события не может быть после даты его окончания");
             }

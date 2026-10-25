@@ -8,6 +8,7 @@ namespace EventsWeb.Services.Services
     public sealed class BookingService : IBookingService
     {
         private List<Booking> bookings { get; } = [];
+        private object locker { get; } = new();
         private IEventService eventService { get; }
         public BookingService(IEventService eventService)
         {
@@ -22,13 +23,20 @@ namespace EventsWeb.Services.Services
                 EventId = eventId,
                 CreatedAt = DateTime.UtcNow
             };
-            this.bookings.Add(booking);
+            lock (this.locker)
+            {
+                this.bookings.Add(booking);
+            }
             return booking;
         }
 
         public async Task<Booking> GetBookingByIdAsync(Guid bookingId)
         {
-            Booking? result = this.bookings.SingleOrDefault(b => b.Id == bookingId);
+            Booking? result;
+            lock (this.locker)
+            {
+                result = this.bookings.SingleOrDefault(b => b.Id == bookingId);
+            }
             if (result == null)
             {
                 throw new NotFoundException();
@@ -37,8 +45,11 @@ namespace EventsWeb.Services.Services
         }
 
         public async Task<IEnumerable<Booking>> GetPending()
-        {
-            return this.bookings.Where(b => b.Status == BookingStatus.Pending);
+        {   
+            lock (this.locker)
+            {
+                return this.bookings.Where(b => b.Status == BookingStatus.Pending).ToArray();
+            }            
         }
 
         public async Task Confirm(Guid bookingId)
@@ -48,8 +59,11 @@ namespace EventsWeb.Services.Services
             {
                 throw new InvalidOperationException("Booking is not pending.");
             }
-            result.Status = BookingStatus.Confirmed;
-            result.ProcessedAt = DateTime.UtcNow;
+            lock (this.locker)
+            {
+                result.Status = BookingStatus.Confirmed;
+                result.ProcessedAt = DateTime.UtcNow;
+            }
         }
 
         public async Task Reject(Guid bookingId)
@@ -59,8 +73,11 @@ namespace EventsWeb.Services.Services
             {
                 throw new InvalidOperationException("Booking is not pending.");
             }
-            result.Status = BookingStatus.Rejected;
-            result.ProcessedAt = DateTime.UtcNow;
+            lock (this.locker)
+            {
+                result.Status = BookingStatus.Rejected;
+                result.ProcessedAt = DateTime.UtcNow;
+            }
         }
     }
 }
