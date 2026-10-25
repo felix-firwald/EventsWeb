@@ -31,6 +31,6 @@ namespace EventsWeb.Core.Entities
         /// Represents the date and time when the booking was processed by the system 
         /// and received one of the statuses (<see cref="BookingStatus.Confirmed"/> or <see cref="BookingStatus.Rejected"/>)
         /// </summary>
-        public DateTime? LastUpdatedAt { get; set; }
+        public DateTime? ProcessedAt { get; set; }
     }
 }
