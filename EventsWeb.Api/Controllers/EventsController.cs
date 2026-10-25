@@ -65,6 +65,13 @@ namespace EventsWeb.Api.Controllers
             return this.NoContent();
         }
 
+        [HttpPost("{id:guid}/book")]
+        public async Task<ActionResult<Booking>> CreateBooking([FromRoute] Guid id)
+        {
+            Booking b = await this.bookingService.CreateBookingAsync(id);
+            return this.Accepted($"/bookings/{b.Id}", b);
+        }
+
         private void CheckDates(EventDto dto)
         {
             if (dto.StartAt >= dto.EndAt)
