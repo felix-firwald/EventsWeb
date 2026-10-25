@@ -1,8 +1,8 @@
 ﻿
+using EventsWeb.Api.Background;
 using EventsWeb.Api.Middleware;
 using EventsWeb.Core.Interface;
 using EventsWeb.Services.Services;
-using System.Runtime.CompilerServices;
 
 namespace EventsWeb.Api
 {
@@ -31,6 +31,8 @@ namespace EventsWeb.Api
         private static void RegisterServicesLayer(IServiceCollection col)
         {
             col.AddSingleton<IEventService, EventService>();
+            col.AddSingleton<IBookingService, BookingService>();
+            col.AddHostedService<BookingBackgroundService>();
         }
     }
 }

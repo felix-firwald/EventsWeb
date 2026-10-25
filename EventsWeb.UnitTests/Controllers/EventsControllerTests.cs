@@ -39,7 +39,7 @@ namespace EventsWeb.UnitTests.Controllers
                     from,
                     to))
                 .Returns(serviceResult);
-            EventsController controller = new(serviceMock.Object);            
+            EventsController controller = CreateController(serviceMock);
             ActionResult<PaginatedResult<Event>> result =
                 controller.GetAll(
                     title,
@@ -75,7 +75,7 @@ namespace EventsWeb.UnitTests.Controllers
             serviceMock
                 .Setup(service => service.GetById(entity.Id))
                 .Returns(entity);
-            EventsController controller = new(serviceMock.Object);            
+            EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Get(entity.Id);           
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Same(entity, okResult.Value);
@@ -89,7 +89,7 @@ namespace EventsWeb.UnitTests.Controllers
             serviceMock
                 .Setup(service => service.GetById(id))
                 .Returns((Event?)null);
-            EventsController controller = new(serviceMock.Object);           
+            EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Get(id);            
             Assert.IsType<NotFoundResult>(result);
         }
@@ -104,7 +104,7 @@ namespace EventsWeb.UnitTests.Controllers
                 new DateTime(2026, 10, 1, 10, 0, 0),
                 new DateTime(2026, 10, 1, 12, 0, 0));
             serviceMock.Setup(service => service.Create(dto));
-            EventsController controller = new(serviceMock.Object);            
+            EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Post(dto);            
             Assert.IsType<CreatedResult>(result);
             serviceMock.Verify(
@@ -132,7 +132,7 @@ namespace EventsWeb.UnitTests.Controllers
                 .Setup(service => service.GetById(entity.Id))
                 .Returns(entity);
             serviceMock.Setup(service => service.Update(entity, dto));
-            EventsController controller = new(serviceMock.Object);            
+            EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Put(entity.Id, dto);           
             Assert.IsType<NoContentResult>(result);
             serviceMock.Verify(
@@ -153,7 +153,7 @@ namespace EventsWeb.UnitTests.Controllers
             serviceMock
                 .Setup(service => service.GetById(id))
                 .Returns((Event?)null);
-            EventsController controller = new(serviceMock.Object);           
+            EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Put(id, dto);           
             Assert.IsType<NotFoundResult>(result);
             serviceMock.Verify(
@@ -178,10 +178,17 @@ namespace EventsWeb.UnitTests.Controllers
                 .Setup(service => service.GetById(entity.Id))
                 .Returns(entity);
             serviceMock.Setup(service => service.Delete(entity));
-            EventsController controller = new(serviceMock.Object);            
+            EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Delete(entity.Id);            
             Assert.IsType<NoContentResult>(result);
             serviceMock.Verify(service => service.Delete(entity), Times.Once);
+        }
+
+        private static EventsController CreateController(Mock<IEventService> eventService)
+        {
+            return new EventsController(
+                eventService.Object,
+                new Mock<IBookingService>(MockBehavior.Strict).Object);
         }
     }
 }
