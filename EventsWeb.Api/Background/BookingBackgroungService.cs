@@ -21,6 +21,7 @@ namespace EventsWeb.Api.Background
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
                     await this.bookingService.Confirm(booking.Id);
                 }
+                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
             }
         }
     }
