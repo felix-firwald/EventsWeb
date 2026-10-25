@@ -27,6 +27,10 @@ namespace EventsWeb.Api.Background
                     }
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
                 }
+                catch (OperationCanceledException ex)
+                {
+                    break;
+                }
                 catch (Exception ex)
                 {
                     this.logger.LogError(ex, "Ошибка выполнения подтверждения бронирований");

@@ -54,13 +54,13 @@ namespace EventsWeb.Services.Services
 
         public async Task Confirm(Guid bookingId)
         {
-            Booking result = await this.GetBookingByIdAsync(bookingId);
-            if (result.Status != BookingStatus.Pending)
-            {
-                throw new InvalidOperationException("Booking is not pending.");
-            }
+            Booking result = await this.GetBookingByIdAsync(bookingId);     
             lock (this.locker)
             {
+                if (result.Status != BookingStatus.Pending)
+                {
+                    throw new InvalidOperationException("Booking is not pending.");
+                }
                 result.Status = BookingStatus.Confirmed;
                 result.ProcessedAt = DateTime.UtcNow;
             }
@@ -68,13 +68,13 @@ namespace EventsWeb.Services.Services
 
         public async Task Reject(Guid bookingId)
         {
-            Booking result = await this.GetBookingByIdAsync(bookingId);
-            if (result.Status != BookingStatus.Pending)
-            {
-                throw new InvalidOperationException("Booking is not pending.");
-            }
+            Booking result = await this.GetBookingByIdAsync(bookingId);           
             lock (this.locker)
             {
+                if (result.Status != BookingStatus.Pending)
+                {
+                    throw new InvalidOperationException("Booking is not pending.");
+                }
                 result.Status = BookingStatus.Rejected;
                 result.ProcessedAt = DateTime.UtcNow;
             }

@@ -78,10 +78,11 @@ namespace EventsWeb.Services.Services
                 query = query.Where(e => e.EndAt <= to);
             }
             
-            int commonCount = query.Count();
+            int commonCount;
             Event[] events;
             lock (this.locker)
             {
+                commonCount = query.Count();
                 events = query
                     .Skip(pagination.SkipCount)
                     .Take(pagination.PageSize)
