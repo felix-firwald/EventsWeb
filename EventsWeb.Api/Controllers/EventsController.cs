@@ -28,17 +28,17 @@ namespace EventsWeb.Api.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get(Guid id)
         {
-            Event? found = this.eventService.GetById(id);
-            if (found is null)
-            {
-                return this.NotFound();
-            }
+            Event found = this.eventService.GetById(id);
             return this.Ok(found);
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Post([FromBody] EventDto dto)
         {
             this.CheckDates(dto);
@@ -51,6 +51,9 @@ namespace EventsWeb.Api.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Put(Guid id, [FromBody] EventDto dto)
         {
             this.CheckDates(dto);
@@ -68,6 +71,8 @@ namespace EventsWeb.Api.Controllers
         }
 
         [HttpPost("{id:guid}/book")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Booking>> CreateBooking([FromRoute] Guid id)
         {
             Booking b = await this.bookingService.CreateBookingAsync(id);
@@ -83,13 +88,11 @@ namespace EventsWeb.Api.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Delete(Guid id)
         {
-            Event? found = this.eventService.GetById(id);
-            if (found is null)
-            {
-                return this.NotFound();
-            }
+            Event found = this.eventService.GetById(id);
             this.eventService.Delete(found);
             return this.NoContent();
         }
