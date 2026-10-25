@@ -6,22 +6,31 @@ namespace EventsWeb.Api.Background
     public sealed class BookingBackgroungService : BackgroundService
     {
         private IBookingService bookingService { get; }
-        public BookingBackgroungService(IBookingService bookingService)
+        private ILogger<BookingBackgroungService> logger { get; }
+        public BookingBackgroungService(ILogger<BookingBackgroungService> logger, IBookingService bookingService)
         {
             this.bookingService = bookingService;
+            this.logger = logger;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                IEnumerable<Booking> pendingBookings = await this.bookingService.GetPending();
-                foreach (Booking booking in pendingBookings)
+                try
                 {
-                    stoppingToken.ThrowIfCancellationRequested();
+                    IEnumerable<Booking> pendingBookings = await this.bookingService.GetPending();
+                    foreach (Booking booking in pendingBookings)
+                    {
+                        stoppingToken.ThrowIfCancellationRequested();
+                        await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                        await this.bookingService.Confirm(booking.Id);
+                    }
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-                    await this.bookingService.Confirm(booking.Id);
                 }
-                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Ошибка выполнения подтверждения бронирований");
+                }
             }
         }
     }
