@@ -14,6 +14,7 @@ namespace EventsWeb.Api.Background
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            this.logger.LogInformation("Бекграунд-сервис подтверждения бронирования запущен");
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -21,13 +22,13 @@ namespace EventsWeb.Api.Background
                     IEnumerable<Booking> pendingBookings = await this.bookingService.GetPending();
                     foreach (Booking booking in pendingBookings)
                     {
-                        stoppingToken.ThrowIfCancellationRequested();
+                        stoppingToken.ThrowIfCancellationRequested();                      
                         await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
                         await this.bookingService.Confirm(booking.Id);
                     }
                     await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
                 }
-                catch (OperationCanceledException ex)
+                catch (OperationCanceledException)
                 {
                     break;
                 }
@@ -36,6 +37,7 @@ namespace EventsWeb.Api.Background
                     this.logger.LogError(ex, "Ошибка выполнения подтверждения бронирований");
                 }
             }
+            this.logger.LogInformation("Бекграунд-сервис подтверждения бронирования остановлен");
         }
     }
 }
