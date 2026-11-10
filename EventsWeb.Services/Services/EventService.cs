@@ -33,6 +33,8 @@ namespace EventsWeb.Services.Services
             result.Description = dto.Description;
             result.StartAt = dto.StartAt;
             result.EndAt = dto.EndAt;
+            result.TotalSeats = dto.TotalSeats!.Value;
+            result.AvailableSeats = result.TotalSeats;
             lock (this.locker)
             {
                 this.events.Add(result);
