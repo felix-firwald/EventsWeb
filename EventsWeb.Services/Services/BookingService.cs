@@ -31,7 +31,7 @@ namespace EventsWeb.Services.Services
                 }
                 else
                 {
-                    throw new NoAvailableSeatsException("Нехватка мест");
+                    throw new NoAvailableSeatsException("No available seats for this event");
                 }
             }
             return booking;
