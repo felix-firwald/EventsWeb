@@ -7,5 +7,6 @@ namespace EventsWeb.Core.DTO
         string? Description,
         [Required] DateTime StartAt,
         [Required] DateTime EndAt,
-        [Required] int? TotalSeats);
+        [Required] int? TotalSeats,
+        [Required] int? AvailableSeats);
 }
