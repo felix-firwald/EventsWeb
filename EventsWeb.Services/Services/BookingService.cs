@@ -25,7 +25,14 @@ namespace EventsWeb.Services.Services
             };
             lock (this.locker)
             {
-                this.bookings.Add(booking);
+                if (result.TryReserveSeats())
+                {
+                    this.bookings.Add(booking);
+                }
+                else
+                {
+                    throw new NoAvailableSeatsException("Нехватка мест");
+                }
             }
             return booking;
         }
