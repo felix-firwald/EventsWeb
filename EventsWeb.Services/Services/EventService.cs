@@ -27,14 +27,12 @@ namespace EventsWeb.Services.Services
             {
                 throw new ValidationException("Дата начала события не может быть больше даты окончания");
             }
-            Event result = new();
-            result.Id = Guid.NewGuid();
-            result.Title = dto.Title;
-            result.Description = dto.Description;
-            result.StartAt = dto.StartAt;
-            result.EndAt = dto.EndAt;
-            result.TotalSeats = dto.TotalSeats!.Value;
-            result.AvailableSeats = result.TotalSeats;
+            Event result = Event.Create(
+                dto.Title,
+                dto.Description,
+                dto.StartAt,
+                dto.EndAt,
+                dto.TotalSeats!.Value);
             lock (this.locker)
             {
                 this.events.Add(result);
