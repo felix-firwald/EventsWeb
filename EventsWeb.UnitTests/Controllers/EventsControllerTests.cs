@@ -1,6 +1,7 @@
 ﻿using EventsWeb.Api.Controllers;
 using EventsWeb.Core.DTO;
 using EventsWeb.Core.Entities;
+using EventsWeb.Core.Exceptions;
 using EventsWeb.Core.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -82,27 +83,26 @@ namespace EventsWeb.UnitTests.Controllers
         }
 
         [Fact]
-        public void Get_WithMissingId_ReturnsNotFound()
+        public void Get_WithMissingId_ThrowsNotFoundException()
         {         
             Mock<IEventService> serviceMock = new(MockBehavior.Strict);
             Guid id = Guid.NewGuid();
             serviceMock
                 .Setup(service => service.GetById(id))
-                .Returns((Event?)null);
+                .Throws(new NotFoundException());
             EventsController controller = CreateController(serviceMock);
-            IActionResult result = controller.Get(id);            
-            Assert.IsType<NotFoundResult>(result);
+            Assert.Throws<NotFoundException>(() => controller.Get(id));
         }
 
         [Fact]
         public void Post_WithValidData_CallsCreateAndReturnsCreated()
         {           
             Mock<IEventService> serviceMock = new(MockBehavior.Strict);
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Событие",
                 null,
                 new DateTime(2026, 10, 1, 10, 0, 0),
-                new DateTime(2026, 10, 1, 12, 0, 0));
+                new DateTime(2026, 10, 1, 12, 0, 0), 2);
             serviceMock.Setup(service => service.Create(dto));
             EventsController controller = CreateController(serviceMock);
             IActionResult result = controller.Post(dto);            
@@ -123,11 +123,11 @@ namespace EventsWeb.UnitTests.Controllers
                 StartAt = new DateTime(2026, 10, 1, 10, 0, 0),
                 EndAt = new DateTime(2026, 10, 1, 12, 0, 0)
             };
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Новое событие",
                 null,
                 new DateTime(2026, 10, 2, 10, 0, 0),
-                new DateTime(2026, 10, 2, 12, 0, 0));
+                new DateTime(2026, 10, 2, 12, 0, 0), 2);
             serviceMock
                 .Setup(service => service.GetById(entity.Id))
                 .Returns(entity);
@@ -145,11 +145,11 @@ namespace EventsWeb.UnitTests.Controllers
         {       
             Mock<IEventService> serviceMock = new(MockBehavior.Strict);
             Guid id = Guid.NewGuid();
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Событие",
                 null,
                 new DateTime(2026, 10, 1, 10, 0, 0),
-                new DateTime(2026, 10, 1, 12, 0, 0));
+                new DateTime(2026, 10, 1, 12, 0, 0), 2);
             serviceMock
                 .Setup(service => service.GetById(id))
                 .Returns((Event?)null);
@@ -159,7 +159,7 @@ namespace EventsWeb.UnitTests.Controllers
             serviceMock.Verify(
                 service => service.Update(
                     It.IsAny<Event>(),
-                    It.IsAny<EventDto>()),
+                    It.IsAny<CreateEventDto>()),
                 Times.Never);
         }
 
