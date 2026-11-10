@@ -2,13 +2,45 @@
 {
     public class Event
     {
+        /// <summary>
+        /// Represents unique ID of event
+        /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Represents
+        /// </summary>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Represents
+        /// </summary>
         public string? Description { get; set; }
+
+        /// <summary>
+        /// Represents start date and time of the event
+        /// </summary>
         public DateTime StartAt { get; set; }
+
+        /// <summary>
+        /// Represents end date and time of the event
+        /// </summary>
         public DateTime EndAt { get; set; }
+
+        /// <summary>
+        /// Represents total count of seats
+        /// </summary>
         public required int TotalSeats { get; set; }
+
+        /// <summary>
+        /// Represents current available seats for booking
+        /// </summary>
         public int AvailableSeats { get; set; }
+
+        /// <summary>
+        /// Try to reserve seats (if they are available)
+        /// <para/>If not, <see langword="false"/> will be returned
+        /// </summary>
         public bool TryReserveSeats(int count = 1)
         {
             int result = this.AvailableSeats - count;
