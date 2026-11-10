@@ -1,4 +1,6 @@
-﻿namespace EventsWeb.Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EventsWeb.Core.Entities
 {
     public class Event
     {
@@ -36,6 +38,26 @@
         /// Represents current available seats for booking
         /// </summary>
         public int AvailableSeats { get; set; }
+
+        /// <summary>
+        /// Creates new event
+        /// </summary>
+        public static Event Create(string title, string? description, DateTime startAt, DateTime endAt, int totalSeats)
+        {
+            if (totalSeats <= 0)
+            {
+                throw new ValidationException("Количество сидений должно быть больше нуля!");
+            }
+            Event result = new();
+            result.Id = Guid.NewGuid();
+            result.Title = title;
+            result.Description = description;
+            result.StartAt = startAt;
+            result.EndAt = endAt;
+            result.TotalSeats = totalSeats;
+            result.AvailableSeats = result.TotalSeats;
+            return result;
+        }
 
         /// <summary>
         /// Try to reserve seats (if they are available)
