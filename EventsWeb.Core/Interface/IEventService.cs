@@ -22,12 +22,12 @@ namespace EventsWeb.Core.Interface
         /// <summary>
         /// Creates new event
         /// </summary>
-        public void Create(EventDto dto);
+        public void Create(CreateEventDto dto);
 
         /// <summary>
         /// Updates existing event
         /// </summary>
-        public void Update(Event target, EventDto dto);
+        public void Update(Event target, CreateEventDto dto);
 
         /// <summary>
         /// Deletes existing event
