@@ -114,5 +114,13 @@ namespace EventsWeb.Services.Services
                 target.EndAt = dto.EndAt;
             }            
         }
+
+        public bool Exists(Guid id)
+        {
+            lock (this.locker)
+            {
+                return this.events.Exists(e => e.Id == id);
+            }
+        }
     }
 }

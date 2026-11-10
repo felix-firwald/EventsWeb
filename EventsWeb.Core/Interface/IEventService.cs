@@ -34,5 +34,9 @@ namespace EventsWeb.Core.Interface
         /// </summary>
         public void Delete(Event entity);
 
+        /// <summary>
+        /// Check event exists
+        /// </summary>
+        public bool Exists(Guid id);
     }
 }
