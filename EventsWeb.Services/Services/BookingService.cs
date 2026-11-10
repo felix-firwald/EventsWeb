@@ -16,15 +16,16 @@ namespace EventsWeb.Services.Services
         }
         public async Task<Booking> CreateBookingAsync(Guid eventId)
         {
+            Booking booking;
+            lock (this.locker)
+            {
             Event result = this.eventService.GetById(eventId);
-            Booking booking = new()
+                booking = new()
             {
                 Id = Guid.NewGuid(),
                 EventId = eventId,
                 CreatedAt = DateTime.UtcNow
             };
-            lock (this.locker)
-            {
                 if (result.TryReserveSeats())
                 {
                     this.bookings.Add(booking);
