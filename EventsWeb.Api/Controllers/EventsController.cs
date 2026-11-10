@@ -73,6 +73,7 @@ namespace EventsWeb.Api.Controllers
         [HttpPost("{id:guid}/book")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<Booking>> CreateBooking([FromRoute] Guid id)
         {
             Booking b = await this.bookingService.CreateBookingAsync(id);

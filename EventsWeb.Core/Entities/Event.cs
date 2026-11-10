@@ -43,8 +43,24 @@
         /// </summary>
         public bool TryReserveSeats(int count = 1)
         {
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(count, 0, nameof(count));
             int result = this.AvailableSeats - count;
             if (result >= 0)
+            {
+                this.AvailableSeats = result;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Try to release seats
+        /// </summary>
+        public bool ReleaseSeats(int count = 1)
+        {
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(count, 0, nameof(count));
+            int result = this.AvailableSeats + count;
+            if (result <= this.TotalSeats)
             {
                 this.AvailableSeats = result;
                 return true;
