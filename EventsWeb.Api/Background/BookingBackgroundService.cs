@@ -1,6 +1,5 @@
 ﻿using EventsWeb.Core.Entities;
 using EventsWeb.Core.Interface;
-using System.Threading.Tasks;
 
 namespace EventsWeb.Api.Background
 {
@@ -8,11 +7,15 @@ namespace EventsWeb.Api.Background
     {
         private readonly SemaphoreSlim semaphore = new(1, 1);
         private IBookingService bookingService { get; }
+        private IEventService eventService { get; }
         private ILogger<BookingBackgroundService> logger { get; }
-        public BookingBackgroundService(ILogger<BookingBackgroundService> logger, IBookingService bookingService)
+        private TimeSpan pollingLatency { get; }
+        public BookingBackgroundService(ILogger<BookingBackgroundService> logger, IEventService eventService, IBookingService bookingService)
         {
             this.bookingService = bookingService;
+            this.eventService = eventService;
             this.logger = logger;
+            this.pollingLatency = TimeSpan.FromSeconds(2);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -22,8 +25,15 @@ namespace EventsWeb.Api.Background
                 try
                 {
                     IEnumerable<Booking> pendingBookings = await this.bookingService.GetPending();
-                    IEnumerable<Task> tasks = pendingBookings.Select(b => this.ProcessBookingAsync(b, stoppingToken));
-                    await Task.WhenAll(tasks);                    
+                    if (pendingBookings.Any())
+                    {
+                        IEnumerable<Task> tasks = pendingBookings.Select(b => this.ProcessBookingAsync(b, stoppingToken));
+                        await Task.WhenAll(tasks);
+                    }
+                    else
+                    {
+                        await Task.Delay(this.pollingLatency, stoppingToken);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -38,11 +48,34 @@ namespace EventsWeb.Api.Background
         }
         private async Task ProcessBookingAsync(Booking booking, CancellationToken stoppingToken)
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+            await Task.Delay(this.pollingLatency, stoppingToken);
             await this.semaphore.WaitAsync(stoppingToken);
+            Event? eventEntity = null;
             try
             {
-                await this.bookingService.Confirm(booking.Id);
+                if (this.eventService.Exists(booking.EventId))
+                {
+                    eventEntity = this.eventService.GetById(booking.EventId);
+                    await this.bookingService.Confirm(booking.Id);
+                }
+                else
+                {
+                    await this.bookingService.Reject(booking.Id);
+                    this.logger.LogWarning("Событие для бронирования {BookingId} было удалено", booking.Id);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Ошибка обработки бронирования {BookingId}", booking.Id);
+                await this.bookingService.Reject(booking.Id);
+                if (eventEntity != null)
+                {
+                    eventEntity.ReleaseSeats();
+                }
             }
             finally
             {
