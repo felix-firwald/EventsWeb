@@ -1,10 +1,12 @@
 ﻿using EventsWeb.Core.Entities;
 using EventsWeb.Core.Interface;
+using System.Threading.Tasks;
 
 namespace EventsWeb.Api.Background
 {
     public sealed class BookingBackgroundService : BackgroundService
     {
+        private readonly SemaphoreSlim semaphore = new(1, 1);
         private IBookingService bookingService { get; }
         private ILogger<BookingBackgroundService> logger { get; }
         public BookingBackgroundService(ILogger<BookingBackgroundService> logger, IBookingService bookingService)
@@ -20,13 +22,8 @@ namespace EventsWeb.Api.Background
                 try
                 {
                     IEnumerable<Booking> pendingBookings = await this.bookingService.GetPending();
-                    foreach (Booking booking in pendingBookings)
-                    {
-                        stoppingToken.ThrowIfCancellationRequested();                      
-                        await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-                        await this.bookingService.Confirm(booking.Id);
-                    }
-                    await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                    IEnumerable<Task> tasks = pendingBookings.Select(b => this.ProcessBookingAsync(b, stoppingToken));
+                    await Task.WhenAll(tasks);                    
                 }
                 catch (OperationCanceledException)
                 {
@@ -38,6 +35,19 @@ namespace EventsWeb.Api.Background
                 }
             }
             this.logger.LogInformation("Бекграунд-сервис подтверждения бронирования остановлен");
+        }
+        private async Task ProcessBookingAsync(Booking booking, CancellationToken stoppingToken)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+            await this.semaphore.WaitAsync(stoppingToken);
+            try
+            {
+                await this.bookingService.Confirm(booking.Id);
+            }
+            finally
+            {
+                this.semaphore.Release();
+            }
         }
     }
 }
