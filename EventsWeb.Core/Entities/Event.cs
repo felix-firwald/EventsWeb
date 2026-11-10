@@ -30,7 +30,7 @@
         /// <summary>
         /// Represents total count of seats
         /// </summary>
-        public required int TotalSeats { get; set; }
+        public int TotalSeats { get; set; }
 
         /// <summary>
         /// Represents current available seats for booking
