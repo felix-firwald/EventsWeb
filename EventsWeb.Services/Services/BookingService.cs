@@ -19,13 +19,13 @@ namespace EventsWeb.Services.Services
             Booking booking;
             lock (this.locker)
             {
-            Event result = this.eventService.GetById(eventId);
+                Event result = this.eventService.GetById(eventId);
                 booking = new()
-            {
-                Id = Guid.NewGuid(),
-                EventId = eventId,
-                CreatedAt = DateTime.UtcNow
-            };
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = eventId,
+                    CreatedAt = DateTime.UtcNow
+                };
                 if (result.TryReserveSeats())
                 {
                     this.bookings.Add(booking);
@@ -65,12 +65,7 @@ namespace EventsWeb.Services.Services
             Booking result = await this.GetBookingByIdAsync(bookingId);     
             lock (this.locker)
             {
-                if (result.Status != BookingStatus.Pending)
-                {
-                    throw new InvalidOperationException("Booking is not pending.");
-                }
-                result.Status = BookingStatus.Confirmed;
-                result.ProcessedAt = DateTime.UtcNow;
+                result.Confirm();
             }
         }
 
@@ -79,12 +74,7 @@ namespace EventsWeb.Services.Services
             Booking result = await this.GetBookingByIdAsync(bookingId);           
             lock (this.locker)
             {
-                if (result.Status != BookingStatus.Pending)
-                {
-                    throw new InvalidOperationException("Booking is not pending.");
-                }
-                result.Status = BookingStatus.Rejected;
-                result.ProcessedAt = DateTime.UtcNow;
+                result.Reject();
             }
         }
     }
