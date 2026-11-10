@@ -17,7 +17,7 @@ namespace EventsWeb.Services.Services
         {
             this.events = [];
         }
-        public void Create(EventDto dto)
+        public void Create(CreateEventDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Title))
             {
@@ -100,7 +100,7 @@ namespace EventsWeb.Services.Services
             return result;
         }
 
-        public void Update(Event target, EventDto dto)
+        public void Update(Event target, CreateEventDto dto)
         {
             lock (this.locker)
             {
