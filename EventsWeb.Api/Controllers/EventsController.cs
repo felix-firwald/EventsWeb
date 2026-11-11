@@ -39,7 +39,7 @@ namespace EventsWeb.Api.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Post([FromBody] EventDto dto)
+        public IActionResult Post([FromBody] CreateEventDto dto)
         {
             this.CheckDates(dto);
             if (!this.ModelState.IsValid)
@@ -54,7 +54,7 @@ namespace EventsWeb.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Put(Guid id, [FromBody] EventDto dto)
+        public IActionResult Put(Guid id, [FromBody] CreateEventDto dto)
         {
             this.CheckDates(dto);
             if (!this.ModelState.IsValid)
@@ -73,13 +73,14 @@ namespace EventsWeb.Api.Controllers
         [HttpPost("{id:guid}/book")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<Booking>> CreateBooking([FromRoute] Guid id)
         {
             Booking b = await this.bookingService.CreateBookingAsync(id);
             return this.Accepted($"/bookings/{b.Id}", b);
         }
 
-        private void CheckDates(EventDto dto)
+        private void CheckDates(CreateEventDto dto)
         {
             if (dto.StartAt >= dto.EndAt)
             {

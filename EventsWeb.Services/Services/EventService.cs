@@ -17,7 +17,7 @@ namespace EventsWeb.Services.Services
         {
             this.events = [];
         }
-        public void Create(EventDto dto)
+        public void Create(CreateEventDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Title))
             {
@@ -27,12 +27,12 @@ namespace EventsWeb.Services.Services
             {
                 throw new ValidationException("Дата начала события не может быть больше даты окончания");
             }
-            Event result = new();
-            result.Id = Guid.NewGuid();
-            result.Title = dto.Title;
-            result.Description = dto.Description;
-            result.StartAt = dto.StartAt;
-            result.EndAt = dto.EndAt;
+            Event result = Event.Create(
+                dto.Title,
+                dto.Description,
+                dto.StartAt,
+                dto.EndAt,
+                dto.TotalSeats!.Value);
             lock (this.locker)
             {
                 this.events.Add(result);
@@ -98,7 +98,7 @@ namespace EventsWeb.Services.Services
             return result;
         }
 
-        public void Update(Event target, EventDto dto)
+        public void Update(Event target, CreateEventDto dto)
         {
             lock (this.locker)
             {
@@ -111,6 +111,14 @@ namespace EventsWeb.Services.Services
                 target.StartAt = dto.StartAt;
                 target.EndAt = dto.EndAt;
             }            
+        }
+
+        public bool Exists(Guid id)
+        {
+            lock (this.locker)
+            {
+                return this.events.Exists(e => e.Id == id);
+            }
         }
     }
 }

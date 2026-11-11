@@ -15,11 +15,12 @@ namespace EventsWeb.UnitTests.Services
         [Fact]
         public void Create_WithValidData_CreatesEvent()
         {        
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Новое событие",
                 "Описание",
                 new DateTime(2026, 12, 1, 10, 0, 0),
-                new DateTime(2026, 12, 1, 12, 0, 0));            
+                new DateTime(2026, 12, 1, 12, 0, 0),
+                10);
             this.Service.Create(dto);            
             PaginatedResult<Event> result = this.Service.GetEvents(new PaginationRequestDto(1, 10));
             Event createdEvent = Assert.Single(result.Entities);
@@ -61,11 +62,12 @@ namespace EventsWeb.UnitTests.Services
             PaginatedResult<Event> allEvents = this.Service.GetEvents(new PaginationRequestDto(1, 20));
             Event target = allEvents.Entities.First();
             Guid originalId = target.Id;
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Изменённое событие",
                 "Изменённое описание",
                 new DateTime(2026, 12, 10, 10, 0, 0),
-                new DateTime(2026, 12, 10, 13, 0, 0));            
+                new DateTime(2026, 12, 10, 13, 0, 0),
+                10);
             this.Service.Update(target, dto);           
             Assert.Equal(originalId, target.Id);
             Assert.Equal(dto.Title, target.Title);
@@ -175,22 +177,24 @@ namespace EventsWeb.UnitTests.Services
         [Fact]
         public void Create_WithEmptyTitle_ThrowsValidationException()
         {
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "   ",
                 null,
                 new DateTime(2026, 12, 1, 10, 0, 0),
-                new DateTime(2026, 12, 1, 12, 0, 0));
+                new DateTime(2026, 12, 1, 12, 0, 0),
+                10);
             Assert.Throws<ValidationException>(() => this.Service.Create(dto));
         }
 
         [Fact]
         public void Create_WithEndBeforeStart_ThrowsValidationException()
         {
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Некорректное событие",
                 null,
                 new DateTime(2026, 12, 1, 12, 0, 0),
-                new DateTime(2026, 12, 1, 10, 0, 0));
+                new DateTime(2026, 12, 1, 10, 0, 0),
+                10);
             Assert.Throws<ValidationException>(() => this.Service.Create(dto));
         }
 
@@ -200,11 +204,12 @@ namespace EventsWeb.UnitTests.Services
             this.SeedService();
             PaginatedResult<Event> allEvents = this.Service.GetEvents(new PaginationRequestDto(1, 20));
             Event target = allEvents.Entities.First();
-            EventDto dto = new(
+            CreateEventDto dto = new(
                 "Некорректное обновление",
                 null,
                 new DateTime(2026, 12, 1, 12, 0, 0),
-                new DateTime(2026, 12, 1, 10, 0, 0));
+                new DateTime(2026, 12, 1, 10, 0, 0),
+                10);
             Assert.Throws<ValidationException>(() => this.Service.Update(target, dto));
         }
     }

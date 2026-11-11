@@ -16,16 +16,24 @@ namespace EventsWeb.Services.Services
         }
         public async Task<Booking> CreateBookingAsync(Guid eventId)
         {
-            Event result = this.eventService.GetById(eventId);
-            Booking booking = new()
-            {
-                Id = Guid.NewGuid(),
-                EventId = eventId,
-                CreatedAt = DateTime.UtcNow
-            };
+            Booking booking;
             lock (this.locker)
             {
-                this.bookings.Add(booking);
+                Event result = this.eventService.GetById(eventId);
+                booking = new()
+                {
+                    Id = Guid.NewGuid(),
+                    EventId = eventId,
+                    CreatedAt = DateTime.UtcNow
+                };
+                if (result.TryReserveSeats())
+                {
+                    this.bookings.Add(booking);
+                }
+                else
+                {
+                    throw new NoAvailableSeatsException("No available seats for this event");
+                }
             }
             return booking;
         }
@@ -57,12 +65,7 @@ namespace EventsWeb.Services.Services
             Booking result = await this.GetBookingByIdAsync(bookingId);     
             lock (this.locker)
             {
-                if (result.Status != BookingStatus.Pending)
-                {
-                    throw new InvalidOperationException("Booking is not pending.");
-                }
-                result.Status = BookingStatus.Confirmed;
-                result.ProcessedAt = DateTime.UtcNow;
+                result.Confirm();
             }
         }
 
@@ -71,12 +74,7 @@ namespace EventsWeb.Services.Services
             Booking result = await this.GetBookingByIdAsync(bookingId);           
             lock (this.locker)
             {
-                if (result.Status != BookingStatus.Pending)
-                {
-                    throw new InvalidOperationException("Booking is not pending.");
-                }
-                result.Status = BookingStatus.Rejected;
-                result.ProcessedAt = DateTime.UtcNow;
+                result.Reject();
             }
         }
     }

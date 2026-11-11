@@ -32,5 +32,31 @@ namespace EventsWeb.Core.Entities
         /// and received one of the statuses (<see cref="BookingStatus.Confirmed"/> or <see cref="BookingStatus.Rejected"/>)
         /// </summary>
         public DateTime? ProcessedAt { get; set; }
+
+        /// <summary>
+        /// Confirms booking
+        /// </summary>
+        public void Confirm()
+        {
+            if (this.Status != BookingStatus.Pending)
+            {
+                throw new InvalidOperationException("Booking is not pending.");
+            }
+            this.Status = BookingStatus.Confirmed;
+            this.ProcessedAt = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Rejects booking
+        /// </summary>
+        public void Reject()
+        {
+            if (this.Status != BookingStatus.Pending)
+            {
+                throw new InvalidOperationException("Booking is not pending.");
+            }
+            this.Status = BookingStatus.Rejected;
+            this.ProcessedAt = DateTime.UtcNow;
+        }
     }
 }
